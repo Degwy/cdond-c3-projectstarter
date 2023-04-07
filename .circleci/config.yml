@@ -19,7 +19,7 @@ commands:
             aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
             aws cloudformation delete-stack --stack-name frontend-<< parameters.Workflow_ID >>
   notify_on_failure:
-      steps:
+      steps: 
         - slack/notify:
             event: fail
             channel: $SLACK_DEFAULT_CHANNEL
