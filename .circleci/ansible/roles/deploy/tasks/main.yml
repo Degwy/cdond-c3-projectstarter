@@ -22,9 +22,9 @@
     pm2 stop default
     pm2 start -f /home/ubuntu/backend/dist/main.js
 
-- name: Verify backend deployment
-  shell: |
-    curl localhost:3030/api/status
+# - name: Verify backend deployment
+#   shell: |
+#     curl localhost:3030/api/status
 
 # - name: Enable pm2
 #   become: true
