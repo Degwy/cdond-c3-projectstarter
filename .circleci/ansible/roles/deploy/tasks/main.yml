@@ -16,10 +16,17 @@
   shell: |
     cd /home/ubuntu/backend
     npm i
+
 - name: Start the app
   shell: |
     pm2 stop default
     pm2 start -f /home/ubuntu/backend/dist/main.js
+
+- name: Get pm2 status
+  become: true
+  shell: |
+    pm2 status
+
 # - name: Enable pm2
 #   become: true
 #   shell: |
