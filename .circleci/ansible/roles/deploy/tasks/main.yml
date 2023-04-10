@@ -19,6 +19,8 @@
 
 - name: Start the app
   shell: |
+    # cd /home/ubuntu/backend
+    pwd
     pm2 stop default
     pm2 start -f /home/ubuntu/backend/dist/main.js
 
