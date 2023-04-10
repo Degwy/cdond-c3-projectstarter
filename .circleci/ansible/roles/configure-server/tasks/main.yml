@@ -6,6 +6,7 @@
 
 - name: "install dependencies."
   become: true
+  # no_output_timeout: 30m
   apt:
     name: ["nodejs", "npm"]
     state: latest
