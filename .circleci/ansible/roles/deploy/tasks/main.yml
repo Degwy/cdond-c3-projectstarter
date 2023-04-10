@@ -19,14 +19,14 @@
 
 - name: Start the app
   shell: |
-    pm2 stop default
-    pm2 start -f /home/ubuntu/backend/dist/main.js
+    sudo pm2 stop default
+    sudo pm2 start -f /home/ubuntu/backend/dist/main.js
 
 # - name: Verify backend deployment
 #   shell: |
 #     curl localhost:3030/api/status
 
-# - name: Enable pm2
-#   become: true
-#   shell: |
-#     sudo su -c "env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu"
+- name: Enable pm2
+  become: true
+  shell: |
+    sudo su -c "env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu"
