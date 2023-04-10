@@ -19,15 +19,12 @@
 
 - name: Start the app
   shell: |
-    sudo pm2 stop default
-    sudo pm2 start -f /home/ubuntu/backend/dist/main.js
-    # node dist/main.js
-    # verify the backend is deployed successfully: curl localhost:3030/api/status
+    pm2 stop default
+    pm2 start -f /home/ubuntu/backend/dist/main.js
 
-- name: Get pm2 status
-  become: true
+- name: Verify backend deployment:
   shell: |
-    pm2 status
+    curl localhost:3030/api/status
 
 # - name: Enable pm2
 #   become: true
