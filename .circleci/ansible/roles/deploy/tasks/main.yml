@@ -21,8 +21,8 @@
   shell: |
     cd /home/ubuntu/backend
     pwd
-    pm2 stop default
-    pm2 start -f /home/ubuntu/backend/dist/main.js
+    sudo pm2 stop default
+    sudo pm2 start -f /home/ubuntu/backend/dist/main.js
 
 # - name: Verify backend deployment
 #   shell: |
