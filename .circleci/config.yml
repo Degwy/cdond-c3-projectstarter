@@ -66,7 +66,7 @@ jobs:
       - run:
           name: Build front-end
           command: |
-            exit 0
+            # exit 0
             cd frontend
             npm run build:prod
       - save_cache:
@@ -116,7 +116,7 @@ jobs:
       - run:
           name: Test Back-end
           command: |
-            exit 0
+            # exit 0
             cd backend
             npm run test
             
@@ -130,7 +130,7 @@ jobs:
       - run:
           name: Scan front-end
           command: |
-            exit 0
+            # exit 0
             npm audit
 
   scan-backend:
@@ -143,7 +143,7 @@ jobs:
       - run:
           name: Scan Back-end
           command: |
-            exit 0
+            # exit 0
             npm audit
 
   deploy-infrastructure:
@@ -155,14 +155,14 @@ jobs:
           name: Install dependencies
           command: |
             yum install -y tar gzip
-      # - run:
-      #     name: Ensure back-end infrastructure exists
-      #     command: |
-      #       aws cloudformation deploy \
-      #         --template-file .circleci/files/backend.yml \
-      #         --tags project=udapeople \
-      #         --stack-name "backend" \
-      #         --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:5}
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=udapeople \
+              --stack-name "backend" \
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:5}
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -293,8 +293,8 @@ jobs:
           command: |
             export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             
-            # URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-            URL="http://g00gle.com"
+            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+            # URL="http://g00gle.com"
             if curl -s --head ${URL}
             then
               echo "It worked!"
@@ -303,8 +303,8 @@ jobs:
               echo "Rolling Back"
               exit 1
             fi
-      - notify_on_failure
-      - destroy_environment
+      # - notify_on_failure
+      # - destroy_environment
 
   cloudfront-update:
     docker:
@@ -353,31 +353,31 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       - deploy-infrastructure:
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches: 
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [deploy-infrastructure]
-      # - deploy-backend:
-          # requires: [run-migrations]
-      # - smoke-test:
-      #     requires: [deploy-backend, deploy-frontend]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
