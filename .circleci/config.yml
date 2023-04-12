@@ -130,6 +130,8 @@ jobs:
       - run:
           name: Scan front-end
           command: |
+            cd frontend
+            npm install
             npm audit
 
   scan-backend:
@@ -142,6 +144,8 @@ jobs:
       - run:
           name: Scan Back-end
           command: |
+            cd backend
+            npm install
             npm audit
 
   deploy-infrastructure:
