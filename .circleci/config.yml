@@ -363,7 +363,7 @@ jobs:
 
   celeberate_of_success:
     docker:
-      - image: circleci/slack@4.10.1
+      - image: mareimorsy/aws-node
     steps:     
       - notify_on_success
 
