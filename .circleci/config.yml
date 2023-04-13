@@ -102,8 +102,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            # npm install oauth-sign
-            # npm run build
             npm run test
                 
   test-backend:
@@ -193,10 +191,6 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
-      # - run:
-      #     name: "Install Dependencies"
-      #     command: |
-      #       apk add ansible gzip openssh-client
       - attach_workspace:
           at: ~/
       - run:
@@ -208,7 +202,6 @@ jobs:
             # aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml -vv
-            # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
       # Here's where you will add some code to rollback on failure      
 
   run-migrations:
