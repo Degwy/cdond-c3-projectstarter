@@ -362,6 +362,8 @@ jobs:
             fi
 
   celeberate_of_success:
+    docker:
+      - image: mareimorsy/aws-node
     steps:     
       - notify_on_success
 
