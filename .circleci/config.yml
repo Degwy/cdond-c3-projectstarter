@@ -362,8 +362,8 @@ jobs:
             fi
 
   celeberate_of_success:
-    docker:
-      - image: mareimorsy/aws-node
+    orbs: 
+      slack: circleci/slack@4.12.1
     steps:     
       - notify_on_success
 
