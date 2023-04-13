@@ -310,7 +310,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
@@ -363,7 +363,7 @@ jobs:
 
   celeberate_of_success:
     docker:
-      - image: mareimorsy/aws-node
+      - image: circleci/slack@4.10.1
     steps:     
       - notify_on_success
 
