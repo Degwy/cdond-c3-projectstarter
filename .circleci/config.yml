@@ -360,7 +360,10 @@ jobs:
               aws cloudformation delete-stack --stack-name "backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowID}"
             fi
-            
+
+  celeberate_of_success:
+    steps:     
+      - notify_on_success
 
 workflows:
   default:
@@ -395,5 +398,5 @@ workflows:
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
-      - notify_on_success:
+      - celeberate_of_success:
           requires: [smoke-test]
