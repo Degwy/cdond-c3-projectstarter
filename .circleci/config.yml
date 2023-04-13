@@ -72,6 +72,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - notify_on_failure
 
   build-backend:
     docker:
@@ -89,6 +90,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - notify_on_failure
 
   test-frontend:
     docker:
@@ -103,7 +105,8 @@ jobs:
             cd frontend
             npm install
             npm run test
-                
+      - notify_on_failure
+        
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -117,6 +120,7 @@ jobs:
             cd backend
             npm install
             npm run test
+      - notify_on_failure
             
   scan-frontend:
     docker:
@@ -130,7 +134,8 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit
+            npm audit fix --audit-level=critical --force
+      - notify_on_failure
 
   scan-backend:
     docker:
@@ -144,7 +149,8 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit
+            npm audit fix --audit-level=critical --force
+      - notify_on_failure
 
   deploy-infrastructure:
     docker:
@@ -183,7 +189,9 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
 #       # Here's where you will add some code to rollback on failure      
-      # - destroy_environment
+      - destroy_environment
+      - notify_on_failure
+
   configure-infrastructure:
     docker:
       - image: mareimorsy/aws-node
@@ -202,7 +210,10 @@ jobs:
             # aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml -vv
-      # Here's where you will add some code to rollback on failure      
+      # Here's where you will add some code to rollback on failure   
+      - destroy_environment   
+      - notify_on_failure
+
 
   run-migrations:
     docker: 
@@ -224,7 +235,10 @@ jobs:
       #     command: |
       #       # Your code here
       #       exit 1
-     # Here's where you will add some code to rollback on failure      
+     # Here's where you will add some code to rollback on failure  
+      - destroy_environment  
+      - notify_on_failure
+  
 
   deploy-frontend:
     docker:
@@ -243,9 +257,10 @@ jobs:
             npm run build:prod
             # aws s3 sync dist s3://udapeople-project
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
-
 #       # Here's where you will add some code to rollback on failure      
-                    
+      - notify_on_failure
+
+
   deploy-backend:
     docker:
       - image: mareimorsy/aws-node
@@ -277,6 +292,8 @@ jobs:
             cd ../.circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
+      - notify_on_failure
+
 
   smoke-test:
     docker:
@@ -298,7 +315,7 @@ jobs:
               echo "Rolling Back"
               exit 1
             fi
-      # - notify_on_failure
+      - notify_on_failure
       - destroy_environment
 
   cloudfront-update:
@@ -354,13 +371,13 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       - deploy-infrastructure:
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          requires: [test-frontend, test-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # requires: [test-frontend, test-backend]
           filters:
             branches: 
               only: [master]
