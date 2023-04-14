@@ -400,5 +400,5 @@ workflows:
       #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
-      - celeberate_of_success:
-          requires: [smoke-test]
+      # - celeberate_of_success:
+      #     requires: [smoke-test]
