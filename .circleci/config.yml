@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs: 
-    slack: circleci/slack@4.0
+    slack: circleci/slack@4.1
 
 commands:
   destroy_environment:
@@ -23,7 +23,7 @@ commands:
       steps: 
         - slack/notify:
             event: fail
-            channel: devops
+            channel: $SLACK_DEFAULT_CHANNEL
             template: basic_fail_1
   
   notify_on_success:
