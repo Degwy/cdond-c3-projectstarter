@@ -131,7 +131,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: [frontend-build]
-      - run:
+      - run:vvc 
           name: Scan front-end
           command: |
             cd frontend
@@ -162,6 +162,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            exit 1
             yum install -y tar gzip
       - run:
           name: Ensure back-end infrastructure exists
