@@ -131,7 +131,7 @@ jobs:
       - checkout
       - restore_cache:
           keys: [frontend-build]
-      - run:vvc 
+      - run: 
           name: Scan front-end
           command: |
             cd frontend
