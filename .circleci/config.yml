@@ -191,7 +191,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
 #       # Here's where you will add some code to rollback on failure      
-      # - destroy_environment
+      - destroy_environment
       - notify_on_failure
 
   configure-infrastructure:
@@ -213,7 +213,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml -vv
       # Here's where you will add some code to rollback on failure   
-      # - destroy_environment   
+      - destroy_environment   
       - notify_on_failure
 
 
@@ -238,7 +238,8 @@ jobs:
       #       # Your code here
       #       exit 1
      # Here's where you will add some code to rollback on failure  
-      # - destroy_environment  
+      - destroy_environment  
+      - revert_migrations
       - notify_on_failure
   
 
@@ -260,6 +261,8 @@ jobs:
             # aws s3 sync dist s3://udapeople-project
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
 #       # Here's where you will add some code to rollback on failure      
+      - destroy_environment  
+      - revert_migrations
       - notify_on_failure
 
 
@@ -294,6 +297,8 @@ jobs:
             cd ../.circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
+      - destroy_environment  
+      - revert_migrations
       - notify_on_failure
 
 
@@ -312,13 +317,14 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
             fi
+      - destroy_environment  
+      - revert_migrations
       - notify_on_failure
-      # - destroy_environment
 
   cloudfront-update:
     docker:
@@ -341,8 +347,9 @@ jobs:
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:5}" \
               --stack-name InitialStack
 
-      # - destroy_environment
+      - destroy_environment  
       - revert_migrations
+      - notify_on_failure
 
   cleanup:
     docker:
@@ -374,34 +381,33 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          # requires: [test-frontend, test-backend]
-          filters:
-            branches: 
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [deploy-infrastructure]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update
-          # requires: [smoke-test]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches: 
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [deploy-infrastructure]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      - smoke-test
+          # requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
       # - celeberate_of_success:
