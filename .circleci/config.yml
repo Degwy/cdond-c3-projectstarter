@@ -219,14 +219,12 @@ jobs:
 
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            cd backend/src
-            # npm install
+            cd backend
+            npm install
             # npm run premigrations
             npm run migrations > migration.txt
             cat migration.txt
@@ -235,7 +233,7 @@ jobs:
           name: Send migration results to kvdb
           command: |
             # Your code here
-            if grep -q "executed successfully." ~/project/backend/src/migrations.txt
+            if grep -q "executed successfully." ~/project/backend/migrations.txt
             then 
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'true'
             fi
@@ -276,8 +274,6 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
-      - attach_workspace:
-          at: ~/
       - run:
           name: Deploy backend
           command: |
@@ -308,30 +304,30 @@ jobs:
       - notify_on_failure
 
 
-  # smoke-test:
-  #   docker:
-  #     - image: mareimorsy/aws-node
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Backend smoke test.
-  #         command: |
-  #           export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            
-  #           URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-  #           if curl -s --head ${URL}
-  #           then
-  #             echo "It worked!"
-  #             exit 1
-  #           else
-  #             echo "Rolling Back"
-  #             exit 1
-  #           fi
-  #     # - destroy_environment  
-  #     - revert_migrations
-  #     - notify_on_failure
-
   smoke-test:
+    docker:
+      - image: mareimorsy/aws-node
+    steps:
+      - checkout
+      - run:
+          name: Backend smoke test.
+          command: |
+            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            
+            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+            if curl -s --head ${URL}
+            then
+              echo "It worked!"
+              exit 0
+            else
+              echo "Rolling Back"
+              exit 1
+            fi
+      - destroy_environment  
+      - revert_migrations
+      - notify_on_failure
+
+  # smoke-test:
     docker:
       # Lightweight Docker image 
       - image: python:3.7-alpine3.11 
@@ -466,9 +462,9 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
-      # - celeberate_of_success:
-      #     requires: [cleanup]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
+      - celeberate_of_success:
+          requires: [cleanup]
