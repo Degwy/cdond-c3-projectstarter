@@ -318,7 +318,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
               exit 1
@@ -466,5 +466,5 @@ workflows:
           requires: [smoke-test]
       - cleanup:
           requires: [cloudfront-update]
-      - celeberate_of_success:
-          requires: [cleanup]
+      # - celeberate_of_success:
+      #     requires: [cleanup]
