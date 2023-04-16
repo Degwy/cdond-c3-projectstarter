@@ -372,13 +372,15 @@ jobs:
               aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowID}"
             fi
 
+
   celeberate_of_success:
     docker:
       - image: cimg/base:stable
-    steps:     
-      event: pass
-      channel: $SLACK_DEFAULT_CHANNEL
-      template: success_tagged_deployment_1
+    steps:
+    - slack/notify:     
+        event: pass
+        channel: $SLACK_DEFAULT_CHANNEL
+        template: success_tagged_deployment_1
 
 
           
@@ -416,4 +418,4 @@ workflows:
       - cleanup:
           requires: [cloudfront-update]
       - celeberate_of_success:
-          requires: [smoke-test]
+          requires: [cleanup]
