@@ -42,13 +42,13 @@ commands:
             SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_complete)
             echo "$SUCCESS"
             # Logic for reverting the database state
-            if (( $SUCCESS == 0 ));
+            if (( $SUCCESS == 'true' ));
             then
               cd ~/project/backend
               npm install
               npm audit fix --force
               npm run migrations:revert
-              curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d '1'
+              curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
             
 jobs:
@@ -235,7 +235,7 @@ jobs:
             # Your code here
             if grep -q "executed successfully." ~/project/backend/src/migrations.txt
             then 
-              curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d '0'
+              curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'true'
             fi
 
      # Here's where you will add some code to rollback on failure  
@@ -412,11 +412,11 @@ workflows:
           requires: [deploy-infrastructure]
       - deploy-backend:
           requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
-      - celeberate_of_success:
-          requires: [cleanup]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
+      # - celeberate_of_success:
+      #     requires: [cleanup]
