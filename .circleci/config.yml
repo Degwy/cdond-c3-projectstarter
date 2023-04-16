@@ -44,6 +44,7 @@ commands:
             if (( $SUCCESS == 'true' ));
             then
               cd ~/project/backend
+              cat package.json
               npm install
               npm audit fix
               npm run premigrations:revert
