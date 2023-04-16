@@ -219,12 +219,14 @@ jobs:
 
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            cd backend
-            npm install
+            cd backend/src
+            # npm install
             # npm run premigrations
             npm run migrations > migration.txt
             cat migration.txt
@@ -233,7 +235,7 @@ jobs:
           name: Send migration results to kvdb
           command: |
             # Your code here
-            if grep -q "executed successfully." ~/project/backend/migrations.txt
+            if grep -q "executed successfully." ~/project/backend/src/migrations.txt
             then 
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'true'
             fi
@@ -274,6 +276,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Deploy backend
           command: |
