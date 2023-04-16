@@ -304,32 +304,75 @@ jobs:
       - notify_on_failure
 
 
-  smoke-test:
+  # smoke-test:
+  #   docker:
+  #     - image: mareimorsy/aws-node
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Backend smoke test.
+  #         command: |
+  #           export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            
+  #           URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
+  #           if curl -s --head ${URL}
+  #           then
+  #             echo "It worked!"
+  #             exit 1
+  #           else
+  #             echo "Rolling Back"
+  #             exit 1
+  #           fi
+  #     # - destroy_environment  
+  #     - revert_migrations
+  #     - notify_on_failure
+
+ smoke-test:
     docker:
-      # - image: mareimorsy/aws-node
+      # Lightweight Docker image
       - image: python:3.7-alpine3.11 
     steps:
+      # Checkout code from git
       - checkout
       - run:
-          name: Backend smoke test.
+          name: Install dependencies
+          working_directory: /tmp
           command: |
             apk add --update curl nodejs npm
             pip install awscli
-
-            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            
-            URL="http://$BACKEND_PUBLIC_IP:3030/api/status"
-            if curl -s --head ${URL}
-            then
-              echo "It worked!"
-              exit 1
-            else
-              echo "Rolling Back"
-              exit 1
-            fi
-      # - destroy_environment  
-      - revert_migrations
-      - notify_on_failure
+      - run:
+          name: Backend smoke test.
+          command: |
+              # Fetch and prepare the BACKEND_IP env var
+              # export BACKEND_IP=$(aws ec2 describe-instances \
+              # --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              # --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              # --output text)
+              export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+              echo "BACKEND_PUBLIC_IP: ${BACKEND_PUBLIC_IP}"
+              export API_URL="http://${BACKEND_IP}:3030"
+              echo "${API_URL}"
+              if curl "${API_URL}/api/status" | grep "ok"
+              then
+                  return 0
+              else
+                  return 1
+              fi
+                - run:
+      - run: 
+          name: Frontend smoke test.
+          command: |
+                URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
+                echo ${URL} 
+                if curl -s ${URL} | grep "Welcome"
+                then
+                    # Change this to 0 after the job fails
+                  return 0
+                else
+                  return 1
+                fi
+      - destroy-environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
