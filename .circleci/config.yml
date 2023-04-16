@@ -34,7 +34,6 @@ commands:
   revert_migrations:
     description: Revert the last migration
     steps:
-      - checkout
       - run:
           name: Revert migrations
           when: on_fail
@@ -303,7 +302,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # - checkout
+      - checkout
       - run:
           name: Backend smoke test.
           command: |
