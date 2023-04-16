@@ -45,7 +45,7 @@ commands:
             then
               cd ~/project/backend
               npm install
-              npm audit fix
+              # npm audit fix
               # npm run premigrations:revert
               npm run migrations:revert
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
