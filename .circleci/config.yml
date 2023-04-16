@@ -26,12 +26,12 @@ commands:
           channel: $SLACK_DEFAULT_CHANNEL
           template: basic_fail_1
   
-  notify_on_success:
-      steps:
-        - slack/notify:
-            event: pass
-            channel: $SLACK_DEFAULT_CHANNEL
-            template: success_tagged_deployment_1
+  # notify_on_success:
+  #     steps:
+  #       - slack/notify:
+  #           event: pass
+  #           channel: $SLACK_DEFAULT_CHANNEL
+  #           template: success_tagged_deployment_1
 
 
   revert_migrations:
@@ -317,7 +317,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
               exit 1
@@ -373,10 +373,11 @@ jobs:
             fi
 
   celeberate_of_success:
-    docker:
-      - image: cimg/base:stable
-    steps:     
-      - notify_on_success
+      steps:
+        - slack/notify:
+            event: pass
+            channel: $SLACK_DEFAULT_CHANNEL
+            template: success_tagged_deployment_1
 
 workflows:
   default:
