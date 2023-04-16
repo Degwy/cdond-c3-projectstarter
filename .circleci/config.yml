@@ -234,7 +234,7 @@ jobs:
           name: Send migration results to kvdb
           command: |
             # Your code here
-            curl --insecure https://kvdb.io/ARXC4LcAsHmsktYYRSAbSE/migration_complete  -d '0'
+            curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d '0'
 
      # Here's where you will add some code to rollback on failure  
       # - destroy_environment  
