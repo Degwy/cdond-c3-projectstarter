@@ -281,6 +281,7 @@ jobs:
             echo $TYPEORM_HOST >> .circleci/ansible/inventory.txt
 
             cd backend
+            echo $(npm --version)
             npm i
             npm run build
             echo "NODE_ENV=production" > .env
