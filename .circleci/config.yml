@@ -6,18 +6,15 @@ orbs:
 commands:
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    parameters:
-      Workflow_ID:
-        type: string
-        default: ${CIRCLE_WORKFLOW_ID:0:5}
     steps:
       - run:
           name: Destroy environment
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name backend-<<parameters.Workflow_ID>>
-            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
-            aws cloudformation delete-stack --stack-name frontend-<<parameters.Workflow_ID>>
+            echo ${CIRCLE_WORKFLOW_ID:0:5}
+            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:5}
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
+            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:5}
   
   notify_on_failure:
     steps:
@@ -37,6 +34,7 @@ commands:
   revert_migrations:
     description: Revert the last migration
     steps:
+      - checkout
       - run:
           name: Revert migrations
           when: on_fail
