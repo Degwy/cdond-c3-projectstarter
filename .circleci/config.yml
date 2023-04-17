@@ -12,10 +12,10 @@ commands:
       - run:
           name: Install nodejs 13.8
           command: |
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | -E bash -
-            apt install -y nodejs
-            npm install --global n
-            n 13.8.0
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            sudo npm install --global n
+            sudo n 13.8.0
 
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -59,7 +59,7 @@ commands:
               cd ~/project/backend
               cat package.json
               npm install
-              # npm audit fix
+              npm audit fix
               npm run migrations:revert
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
@@ -168,7 +168,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - install_nodejs
       - run:
           name: Install dependencies
           command: |
@@ -209,7 +208,6 @@ jobs:
       - image: mareimorsy/aws-node
     steps:
       - checkout
-      - install_nodejs
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
       - attach_workspace:
@@ -235,7 +233,6 @@ jobs:
 
     steps:
       - checkout
-      - install_nodejs
       - run:
           name: Run migrations
           command: |
@@ -266,7 +263,6 @@ jobs:
       - image: mareimorsy/aws-node
     steps:
       - checkout
-      - install_nodejs
       - run:
           name: Deploy Frontend
           command: |
@@ -294,7 +290,7 @@ jobs:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
       - attach_workspace:
           at: ~/
-      - install_nodejs
+      # - install_nodejs
       - run:
           name: Deploy backend
           command: |
