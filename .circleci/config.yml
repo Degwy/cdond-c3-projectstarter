@@ -168,6 +168,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - install_nodejs
       - run:
           name: Install dependencies
           command: |
@@ -208,6 +209,7 @@ jobs:
       - image: mareimorsy/aws-node
     steps:
       - checkout
+      - install_nodejs
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
       - attach_workspace:
@@ -233,6 +235,7 @@ jobs:
 
     steps:
       - checkout
+      - install_nodejs
       - run:
           name: Run migrations
           command: |
@@ -263,6 +266,7 @@ jobs:
       - image: mareimorsy/aws-node
     steps:
       - checkout
+      - install_nodejs
       - run:
           name: Deploy Frontend
           command: |
