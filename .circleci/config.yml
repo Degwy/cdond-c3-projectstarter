@@ -12,7 +12,7 @@ commands:
       - run:
           name: Install nodejs 13.8
           command: |
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | -E bash -
             apt install -y nodejs
             npm install --global n
             n 13.8.0
