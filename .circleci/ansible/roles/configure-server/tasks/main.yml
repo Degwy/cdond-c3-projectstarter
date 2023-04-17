@@ -4,13 +4,23 @@
 #   apt:
 #     upgrade: "yes"
 
-- name: "install dependencies."
-  become: true
-  # no_output_timeout: 30m
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
+# - name: "install dependencies."
+#   become: true
+#   # no_output_timeout: 30m
+#   apt:
+#     name: ["nodejs", "npm"]
+#     state: latest
+#     update_cache: yes
+
+
+- name: install nodejs 13.8
+  become: True
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt install -y nodejs
+    sudo npm install --global n
+    sudo n 13.8.0
+    
 
 - name: "install pm2"
   become: true
