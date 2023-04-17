@@ -1,2 +1,2 @@
 https://github.com/Degwy/cdond-c3-projectstarter
-http://udapeople-cc1ae.s3-website-us-east-1.amazonaws.com/#/employees/new
+http://udapeople-4e2e1.s3-website-us-east-1.amazonaws.com/#/employees
