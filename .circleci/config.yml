@@ -299,6 +299,8 @@ jobs:
 
             cd backend
             echo $(npm --version)
+            echo $(node --version)
+            echo $(docker ps)
             npm i
             npm run build
             npm install cors
