@@ -223,9 +223,9 @@ jobs:
           name: Run migrations
           command: |
             export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            echo ${TYPEORM_HOST}
             cd backend
             npm install
-            # npm run premigrations
             npm run migrations > migration.txt
             cat migration.txt
 
@@ -322,7 +322,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
