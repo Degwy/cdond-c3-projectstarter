@@ -274,6 +274,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Deploy backend
           command: |
@@ -284,6 +286,7 @@ jobs:
             echo $(npm --version)
             npm i
             npm run build
+            npm install cors
             echo "NODE_ENV=production" > .env
             echo "TYPEORM_ENTITIES=/home/ubuntu/backend/dist/modules/domain/**/*.entity{.ts,.js}" > .env
             echo "TYPEORM_HOST=${TYPEORM_HOST}" >> .env
@@ -297,7 +300,8 @@ jobs:
             cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/artifact.tar.gz
             ls ../.circleci/ansible/roles/deploy/
             cd ../.circleci/ansible
-            ansible-playbook -i inventory.txt deploy-backend.yml
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml -vvv
       # Here's where you will add some code to rollback on failure  
       - destroy_environment  
       - revert_migrations
