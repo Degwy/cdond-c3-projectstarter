@@ -208,7 +208,7 @@ jobs:
             # aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml -vv
-            ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
+            # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
       # Here's where you will add some code to rollback on failure   
       - destroy_environment   
       - notify_on_failure
@@ -323,7 +323,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
