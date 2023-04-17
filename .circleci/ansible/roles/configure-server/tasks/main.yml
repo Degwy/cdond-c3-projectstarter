@@ -4,13 +4,13 @@
 #   apt:
 #     upgrade: "yes"
 
-# - name: "install dependencies."
-#   become: true
-#   # no_output_timeout: 30m
-#   apt:
-#     name: ["nodejs", "npm"]
-#     state: latest
-#     update_cache: yes
+- name: "install dependencies."
+  become: true
+  # no_output_timeout: 30m
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
 
 
 - name: install nodejs 13.8

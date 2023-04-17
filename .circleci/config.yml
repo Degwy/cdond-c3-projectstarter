@@ -290,7 +290,7 @@ jobs:
           fingerprints: ["6e:98:17:bd:4f:60:e9:4a:16:c9:50:9e:e6:08:f6:a3"]
       - attach_workspace:
           at: ~/
-      # - install_nodejs
+      - install_nodejs
       - run:
           name: Deploy backend
           command: |
