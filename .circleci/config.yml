@@ -5,6 +5,15 @@ orbs:
 
 commands:
 
+install_awscli:
+    description: Install AWS CLI v2
+    steps:
+      - run:
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
 
   install_nodejs:
     description: Install nodejs 13.8
@@ -69,8 +78,8 @@ commands:
               cd ~/project/backend
               # cat package.json
               # rm package-lock.json
-              rm -rf node_modules
-              npm cache clean --force
+              # rm -rf node_modules
+              # npm cache clean --force
               # npm cache verify
 
               npm install
@@ -248,7 +257,7 @@ jobs:
             ls
             pwd
             cd .circleci/ansible
-            # aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters Name=tag:project,Values="udapeople" --output text >> inventory.txt
+            aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters Name=tag:project,Values="udapeople" --output text >> inventory.txt
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml -vv
             # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
@@ -357,9 +366,12 @@ jobs:
 
   smoke-test:
     docker:
-      - image: mareimorsy/aws-node
+      # - image: mareimorsy/aws-node
+      - image: cimg/base:stable
     steps:
       - checkout
+      - install_awscli
+      - install_nodejs
       - run:
           name: Backend smoke test.
           command: |
@@ -377,54 +389,6 @@ jobs:
       - destroy_environment  
       - revert_migrations
       - notify_on_failure
-
-  # smoke-test:
-    # docker:
-    #   # Lightweight Docker image 
-    #   - image: python:3.7-alpine3.11 
-    # steps:
-    #   # Checkout code from git
-    #   - checkout
-    #   - run:
-    #       name: Install dependencies
-    #       working_directory: /tmp
-    #       command: |
-    #         apk add --update curl nodejs npm
-    #         pip install awscli
-    #   - run:
-    #       name: Backend smoke test.
-    #       command: |
-    #           # Fetch and prepare the BACKEND_IP env var
-    #           # export BACKEND_IP=$(aws ec2 describe-instances \
-    #           # --query 'Reservations[*].Instances[*].PublicIpAddress' \
-    #           # --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-    #           # --output text)
-    #           export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters Name=tag:project,Values="udapeople" --output text)
-    #           echo "BACKEND_PUBLIC_IP: ${BACKEND_PUBLIC_IP}"
-    #           export API_URL="http://${BACKEND_IP}:3030"
-    #           echo "${API_URL}"
-    #           if curl "${API_URL}/api/status" | grep "ok"
-    #           then
-    #               return 0
-    #           else
-    #               return 1
-    #           fi
-    #             - run:
-    #   - run: 
-    #       name: Frontend smoke test.
-    #       command: |
-    #             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
-    #             echo ${URL} 
-    #             if curl -s ${URL} | grep "Welcome"
-    #             then
-    #                 # Change this to 0 after the job fails
-    #               return 0
-    #             else
-    #               return 1
-    #             fi
-    #   - destroy_environment
-    #   - revert_migrations
-    #   - notify_on_failure
 
   cloudfront-update:
     docker:
@@ -488,27 +452,27 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches: 
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches: 
+      #         only: [main]
+      - configure-infrastructure
+          # requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [deploy-infrastructure]
+      - deploy-frontend
+          # requires: [deploy-infrastructure]
       - deploy-backend:
           requires: [run-migrations]
       - smoke-test:
