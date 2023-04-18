@@ -59,7 +59,7 @@ commands:
               cd ~/project/backend
               npm install
               # npm audit fix
-              npm run migrations:revert
+              npm run migration:revert
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
             echo "Key value after Revert: $(curl --insecure https://kvdb.io/${KVDB_BUCKET}/migration_complete)"
@@ -296,7 +296,6 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            exit 1
             export TYPEORM_HOST=$(aws ec2 describe-instances --region us-east-1 --query 'Reservations[*].Instances[*].PublicIpAddress' --filters Name=tag:project,Values="udapeople" --output text)
             echo $TYPEORM_HOST >> .circleci/ansible/inventory.txt
 
