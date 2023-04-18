@@ -22,8 +22,8 @@ commands:
     parameters:
       Workflow_ID:
         type: string
-        # default: ${CIRCLE_WORKFLOW_ID:0:5}    
-        default: f8c7e 
+        default: ${CIRCLE_WORKFLOW_ID:0:5}    
+        # default: f8c7e 
     steps:
       - run:
           name: Destroy environment
@@ -69,7 +69,7 @@ commands:
               cd ~/project/backend
               cat package.json
               npm install
-              npm audit fix
+              # npm audit fix
               npm run migrations:revert
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
@@ -364,7 +364,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
@@ -483,34 +483,34 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches: 
-      #         only: [main]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [deploy-infrastructure]
-      # - deploy-backend:
-      #     requires: [run-migrations]
-      - smoke-test
-          # requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
-      # - celeberate_of_success:
-      #     requires: [cleanup]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches: 
+              only: [main]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [deploy-infrastructure]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
+      - celeberate_of_success:
+          requires: [cleanup]
