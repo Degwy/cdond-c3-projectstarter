@@ -68,9 +68,9 @@ commands:
             then
               cd ~/project/backend
               # cat package.json
-              rm package-lock.json
-              npm cache clean --force
-              npm cache verify
+              # rm package-lock.json
+              # npm cache clean --force
+              # npm cache verify
 
               npm install
               npm audit fix
