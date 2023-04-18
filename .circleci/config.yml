@@ -317,7 +317,7 @@ jobs:
           command: |
             cd backend
             npm run build
-            # npm install cors
+            # npm install cors 
 
             tar -czf artifact.tar.gz dist/* package*
 
@@ -367,7 +367,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 1
+              exit 0
             else
               echo "Rolling Back"
               exit 1
