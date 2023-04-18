@@ -69,7 +69,8 @@ commands:
               cd ~/project/backend
               # cat package.json
               # rm package-lock.json
-              # npm cache clean --force
+              rm -rf node_modules
+              npm cache clean
               # npm cache verify
 
               npm install
@@ -368,7 +369,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
               exit 1
