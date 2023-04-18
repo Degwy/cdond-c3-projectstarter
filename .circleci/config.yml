@@ -70,7 +70,7 @@ commands:
               # cat package.json
               # rm package-lock.json
               rm -rf node_modules
-              npm cache clean
+              npm cache clean --force
               # npm cache verify
 
               npm install
