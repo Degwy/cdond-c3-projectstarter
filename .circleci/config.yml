@@ -19,15 +19,20 @@ commands:
 
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      Workflow_ID:
+        type: string
+        # default: ${CIRCLE_WORKFLOW_ID:0:5}    
+        default: f8c7e 
     steps:
       - run:
           name: Destroy environment
           when: on_fail
           command: |
             echo ${CIRCLE_WORKFLOW_ID:0:5}
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID:0:5}
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:5} --recursive
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID:0:5}
+            aws cloudformation delete-stack --stack-name backend-<parameters.Workflow_ID>>
+            aws s3 rm s3://udapeople-<parameters.Workflow_ID>> --recursive
+            aws cloudformation delete-stack --stack-name frontend-<parameters.Workflow_ID>>
   
   notify_on_failure:
     steps:
@@ -46,6 +51,10 @@ commands:
 
   revert_migrations:
     description: Revert the last migration
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:5}
     steps:
       - run:
           name: Revert migrations
@@ -54,6 +63,7 @@ commands:
             SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_complete)
             echo "$SUCCESS"
             # Logic for reverting the database state
+            echo $(node -v)
             if (( $SUCCESS == 'true' ));
             then
               cd ~/project/backend
@@ -64,6 +74,21 @@ commands:
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
             
+          # command: |
+          #   SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_complete)
+          #   echo "$SUCCESS"
+          #   # Logic for reverting the database state
+          #   if (( $SUCCESS == 'true' ));
+          #   then
+          #     cd ~/project/backend
+          #     cat package.json
+          #     npm install
+          #     npm audit fix
+          #     npm run migrations:revert
+          #     curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
+          #   fi
+
+
 jobs:
 
   build-frontend:
@@ -339,7 +364,7 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
               exit 1
@@ -458,34 +483,34 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches: 
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [deploy-infrastructure]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches: 
+      #         only: [main]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [deploy-infrastructure]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      - smoke-test
+          # requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
       # - celeberate_of_success:
       #     requires: [cleanup]
