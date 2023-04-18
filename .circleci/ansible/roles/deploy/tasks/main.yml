@@ -12,6 +12,10 @@
 #     src: ~/project/.circleci/ansible/roles/deploy/artifact.tar.gz
 #     dest: /home/ubuntu/backend
 
+- copy:
+    src: ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
+    dest: ~/backend-app
+
 # - name: Extract artifact.tar.gz to EC2 
 #   unarchive:
 #     src: artifact.tar.gz
@@ -42,7 +46,7 @@
     cd ~/backend-app/dist
     pm2 stop default
     pm2 start main.js
-    
+
   register: execute_node
 
 - name: print message
