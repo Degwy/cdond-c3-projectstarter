@@ -372,7 +372,7 @@ jobs:
               echo "Rolling Back"
               exit 1
             fi
-      - destroy_environment  
+      # - destroy_environment  
       - revert_migrations
       - notify_on_failure
 
