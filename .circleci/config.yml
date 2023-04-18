@@ -67,9 +67,13 @@ commands:
             if (( $SUCCESS == 'true' ));
             then
               cd ~/project/backend
-              cat package.json
+              # cat package.json
+              rm package-lock.json
+              npm cache clean --force
+              npm cache verify
+
               npm install
-              # npm audit fix
+              npm audit fix
               npm run migrations:revert
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
             fi
