@@ -223,7 +223,7 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml -vv
             # ansible-playbook -i inventory.txt prometheus-exporter.yml -vv
       # Here's where you will add some code to rollback on failure   
-      # - destroy_environment    
+      # - destroy_environment   
       - notify_on_failure
 
 
@@ -422,7 +422,7 @@ jobs:
     #             fi
     #   - destroy_environment
     #   - revert_migrations
-    #   - notify_on_failure 
+    #   - notify_on_failure
 
   cloudfront-update:
     docker:
@@ -496,17 +496,17 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      # - deploy-infrastructure:
-      #     # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches: 
-      #         only: [master]
+      - deploy-infrastructure:
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches: 
+              only: [master]
       - configure-infrastructure
           # requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend
-          # requires: [deploy-infrastructure]
+      - deploy-frontend:
+          requires: [deploy-infrastructure]
       - deploy-backend:
           requires: [run-migrations]
       # - smoke-test:
