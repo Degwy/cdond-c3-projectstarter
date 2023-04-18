@@ -381,13 +381,19 @@ jobs:
             if curl -s --head ${URL}
             then
               echo "It worked!"
-              exit 0
+              exit 1
             else
               echo "Rolling Back"
               exit 1
             fi
       - destroy_environment  
-      - revert_migrations
+      # - revert_migrations
+      - run:
+          name: Revert Migration
+          when: on_fail
+          command: |
+            npm run migrations:revert
+            curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
       - notify_on_failure
 
   cloudfront-update:
