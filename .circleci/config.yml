@@ -392,6 +392,7 @@ jobs:
           name: Revert Migration
           when: on_fail
           command: |
+            cd ~/project/backend
             npm run migrations:revert
             curl -k https://kvdb.io/${KVDB_BUCKET}/migration_complete  -d 'false'
       - notify_on_failure
